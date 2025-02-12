@@ -27,6 +27,7 @@ return {
       'microsoft/vscode-js-debug',
       build = 'npm i && npm run compile vsDebugServerBundle && mv dist out',
     },
+    'mfussenegger/nvim-dap-python',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -151,6 +152,7 @@ return {
     require('dap-vscode-js').setup {
       debugger_path = vim.fn.stdpath 'data' .. '/lazy/vscode-js-debug',
     }
+    require('dap-python').setup '~/.virtualenvs/debugpy/bin/python'
     -- require('mason-nvim-dap').setup {
     --   automatic_installation = false,
     --   ensure_installed = {
