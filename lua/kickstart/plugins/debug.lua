@@ -153,6 +153,7 @@ return {
       debugger_path = vim.fn.stdpath 'data' .. '/lazy/vscode-js-debug',
     }
     require('dap-python').setup '~/.virtualenvs/debugpy/bin/python'
+    require('dap').configurations.python = {}
     -- require('mason-nvim-dap').setup {
     --   automatic_installation = false,
     --   ensure_installed = {
