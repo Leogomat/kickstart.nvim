@@ -9,7 +9,7 @@ return {
         markdown = { 'markdownlint' },
         javascript = { 'eslint' },
         typescript = { 'eslint' },
-        python = { 'pylint' },
+        -- python = { 'pylint' },
       }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,

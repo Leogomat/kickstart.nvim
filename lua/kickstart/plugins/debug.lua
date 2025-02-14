@@ -6,6 +6,35 @@
 -- be extended to other languages as well. That's why it's called
 -- kickstart.nvim and not kitchen-sink.nvim ;)
 
+local function resize()
+  -- Get our current buffer number
+  local tn = vim.api.nvim_get_current_tabpage()
+  local tree_win_handle = nil
+  for _, window_handle in ipairs(vim.api.nvim_tabpage_list_wins(tn)) do
+    local buffer_handle = vim.api.nvim_win_get_buf(window_handle)
+    local buf_name = vim.fn.bufname(buffer_handle)
+    if buf_name == 'neo-tree filesystem [1]' then
+      tree_win_handle = window_handle
+      break
+    end
+  end
+  if tree_win_handle == nil then
+    -- Did not find window for neo-tree, could not reset size.
+    return
+  end
+  local configured_width = require('neo-tree').config.filesystem.window.width or 40
+  if vim.api.nvim_win_get_width(tree_win_handle) > configured_width then
+    -- Reset neo-tree window size to proper value.
+    vim.api.nvim_win_set_width(tree_win_handle, configured_width)
+    return
+  end
+  -- Did not find window in tabpage, could not reset size.
+end
+
+vim.keymap.set('n', '<F7>', function()
+  dapui.toggle()
+  require('neotreenormalized').resize()
+end, { desc = 'Toggle nvim-dap-ui' })
 return {
   -- NOTE: Yes, you can install new plugins here!
   'mfussenegger/nvim-dap',
@@ -35,8 +64,17 @@ return {
       '<F5>',
       function()
         require('dap').continue()
+        resize()
       end,
       desc = 'Debug: Start/Continue',
+    },
+    {
+      '<F4>',
+      function()
+        require('dap').restart()
+        resize()
+      end,
+      desc = 'Debug: Restart',
     },
     {
       '<F1>',
@@ -78,6 +116,7 @@ return {
       '<F7>',
       function()
         require('dapui').toggle()
+        resize()
       end,
       desc = 'Debug: See last session result.',
     },
@@ -85,6 +124,10 @@ return {
   config = function()
     local dap = require 'dap'
     local dapui = require 'dapui'
+
+    -- Resize NeoTree when openin
+    dap.listeners.after.event_terminated['dapui_config'] = resize
+    dap.listeners.after.event_exited['dapui_config'] = resize
 
     require('mason-nvim-dap').setup {
       -- Makes a best effort to setup the various debuggers with
@@ -121,6 +164,42 @@ return {
           run_last = '▶▶',
           terminate = '⏹',
           disconnect = '⏏',
+        },
+      },
+      force_buffers = true,
+      layouts = {
+        {
+          elements = {
+            {
+              id = 'scopes',
+              size = 0.25,
+            },
+            {
+              id = 'breakpoints',
+              size = 0.25,
+            },
+            {
+              id = 'stacks',
+              size = 0.25,
+            },
+            {
+              id = 'watches',
+              size = 0.25,
+            },
+          },
+          position = 'left',
+          size = 40,
+        },
+        {
+          elements = { {
+            id = 'repl',
+            size = 0.75,
+          }, {
+            id = 'console',
+            size = 0.25,
+          } },
+          position = 'bottom',
+          size = 10,
         },
       },
     }
