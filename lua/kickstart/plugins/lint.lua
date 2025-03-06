@@ -9,7 +9,20 @@ return {
         markdown = { 'markdownlint' },
         javascript = { 'eslint' },
         typescript = { 'eslint' },
-        -- python = { 'pylint' },
+        python = { 'pylint' },
+      }
+
+      -- Set pylint to work in virtualenv
+      lint.linters.pylint.cmd = 'poetry'
+      lint.linters.pylint.args = {
+        'run',
+        'pylint',
+        '-f',
+        'json',
+        '--from-stdin',
+        function()
+          return vim.api.nvim_buf_get_name(0)
+        end,
       }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,

@@ -189,6 +189,9 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- Unmap s since it interfers with surround commands
+-- vim.api.nvim_del_keymap('n', 's')
+--
 -- My mappings
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -632,6 +635,12 @@ require('lazy').setup({
                 pylint = {
                   enabled = false,
                 },
+                autopep8 = {
+                  enabled = false,
+                },
+                flake8 = {
+                  enabled = false,
+                },
               },
             },
           },
@@ -702,6 +711,9 @@ require('lazy').setup({
         '<leader>f',
         function()
           require('conform').format { async = true, lsp_format = 'fallback' }
+          if vim.opt_local.modifiable:get() then
+            require('lint').try_lint()
+          end
         end,
         mode = '',
         desc = '[F]ormat buffer',
@@ -721,7 +733,7 @@ require('lazy').setup({
           lsp_format_opt = 'fallback'
         end
         return {
-          timeout_ms = 500,
+          timeout_ms = 2500,
           lsp_format = lsp_format_opt,
         }
       end,
