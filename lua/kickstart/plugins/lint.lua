@@ -23,6 +23,7 @@ return {
         function()
           return vim.api.nvim_buf_get_name(0)
         end,
+        "--rcfile=~/.config/nvim/.pylintrc"
       }
 
       -- To allow other plugins to add linters to require('lint').linters_by_ft,
