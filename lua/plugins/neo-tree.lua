@@ -9,9 +9,9 @@ local function resize()
   for _, window_handle in ipairs(vim.api.nvim_tabpage_list_wins(tn)) do
     local buffer_handle = vim.api.nvim_win_get_buf(window_handle)
     local buf_name = vim.fn.bufname(buffer_handle)
-    if buf_name == 'DAP Scopes' then
+    if buf_name == 'DAP Console' then
       debug_win_handle = window_handle
-      local configured_width = require('dapui.config').layouts[1].size
+      local configured_width = require('dapui.config').layouts[2].size
       if vim.api.nvim_win_get_width(debug_win_handle) > configured_width then
         vim.api.nvim_win_set_width(debug_win_handle, configured_width)
         return

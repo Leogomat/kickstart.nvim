@@ -120,6 +120,13 @@ return {
       end,
       desc = 'Debug: See last session result.',
     },
+    {
+      '<leader>e',
+      function()
+        require('dapui').eval()
+      end,
+      desc = 'Debug: Evaluate selection.',
+    },
   },
   config = function()
     local dap = require 'dap'
@@ -171,35 +178,38 @@ return {
         {
           elements = {
             {
+              id = 'repl',
+              size = 0.333,
+            },
+            {
               id = 'scopes',
-              size = 0.25,
-            },
-            {
-              id = 'breakpoints',
-              size = 0.25,
-            },
-            {
-              id = 'stacks',
-              size = 0.25,
+              size = 0.333,
             },
             {
               id = 'watches',
-              size = 0.25,
+              size = 0.333,
+            },
+          },
+          position = 'bottom',
+          size = 10,
+        },
+        {
+          elements = {
+            {
+              id = 'console',
+              size = 0.5,
+            },
+            {
+              id = 'breakpoints',
+              size = 0.333,
+            },
+            {
+              id = 'stacks',
+              size = 0.333,
             },
           },
           position = 'left',
           size = 40,
-        },
-        {
-          elements = { {
-            id = 'repl',
-            size = 0.75,
-          }, {
-            id = 'console',
-            size = 0.25,
-          } },
-          position = 'bottom',
-          size = 10,
         },
       },
     }
