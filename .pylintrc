@@ -1,2 +1,5 @@
-[MASTER]
-init-hook='import sys; sys.path.append(".")'
+[MAIN]
+init-hook=
+	import sys
+	import glob
+	sys.path.extend(glob.glob("./.venv/lib/*/site-packages"))

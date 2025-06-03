@@ -43,4 +43,11 @@ return { -- Autoformat
       json = { 'fixjson' },
     },
   },
+  config = function()
+    require("conform").formatters.black = {
+      prepend_args = function(self, ctx) 
+        return {"--line-length", 120}
+      end
+    }
+  end
 }

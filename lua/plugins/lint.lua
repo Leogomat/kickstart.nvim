@@ -13,10 +13,10 @@ return {
       }
 
       -- Set pylint to work in virtualenv
-      lint.linters.pylint.cmd = 'poetry'
+      lint.linters.pylint.cmd = 'pylint'
       lint.linters.pylint.args = {
-        'run',
-        'pylint',
+        -- 'run',
+        -- 'pylint',
         '-f',
         'json',
         '--from-stdin',
