@@ -4,7 +4,41 @@
 --
 -- Primarily focused on configuring the debugger for Go, but can
 -- be extended to other languages as well. That's why it's called
--- kickstart.nvim and not kitchen-sink.nvim ;)
+-- kickstart.nvim and not kitchen-sink.nvim ;)local lfs = require("lfs")
+
+local function folder_exists(path)
+    local attr = lfs.attributes(path)
+    return attr and attr.mode == "directory"
+end
+
+local function create_folder(path)
+    if not folderExists(path) then
+        local success, err = lfs.mkdir(path)
+        if success then
+            print("Folder created successfully.")
+            return true
+        else
+            print("Failed to create folder: " .. err)
+        end
+    else
+        print("Folder already exists.")
+    end
+end
+
+local function get_node_version()
+  local handle = io.popen('node -v')
+  if handle then
+    local result = handle:read("*a")
+    handle:close()
+    return result
+  end
+end
+
+local function get_js_debug_build()
+  local node_version = get_node_version()
+  local debugger_path = '../' .. 'vscode-js-debug-' .. node_version .. '/out'
+
+end
 
 local function resize()
   -- Get our current buffer number
@@ -149,7 +183,8 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        'dap-python',
+        'js-debug-adapter'
       },
     }
 
@@ -219,7 +254,7 @@ return {
     vim.api.nvim_set_hl(0, 'DapStop', { fg = '#ffcc00' })
     local breakpoint_icons = vim.g.have_nerd_font
         and { Breakpoint = '', BreakpointCondition = '', BreakpointRejected = '', LogPoint = '', Stopped = '' }
-      or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
+        or { Breakpoint = '●', BreakpointCondition = '⊜', BreakpointRejected = '⊘', LogPoint = '◆', Stopped = '⭔' }
     for type, icon in pairs(breakpoint_icons) do
       local tp = 'Dap' .. type
       local hl = (type == 'Stopped') and 'DapStop' or 'DapBreak'
@@ -230,16 +265,9 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    -- Install golang specific config
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
-      },
-    }
     require('dap-vscode-js').setup {
       debugger_path = vim.fn.stdpath 'data' .. '/lazy/vscode-js-debug',
+      adapters = { 'chrome', 'pwa-node', 'pwa-chrome', 'pwa-msedge', 'node-terminal', 'pwa-extensionHost', 'node', 'chrome' },
     }
     require('dap-python').setup '~/.virtualenvs/debugpy/bin/python'
     require('dap').configurations.python = {}
@@ -254,10 +282,13 @@ return {
       host = 'localhost',
       port = '${port}',
       executable = {
-        command = 'node',
+        command = 'js-debug-adapter',
+        args = { '${port}' }
+        -- command = 'node',
         -- 💀 Make sure to update this path to point to your installation
-        args = { vim.fn.stdpath 'data' .. '/lazy/vscode-js-debug/out/src/vsDebugServer.js', '${port}' },
+        -- args = { vim.fn.stdpath 'data' .. '/lazy/vscode-js-debug/out/src/vsDebugServer.js', '${port}' },
       },
     }
+    require('dap').configurations.javascript = {}
   end,
 }
